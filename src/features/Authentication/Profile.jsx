@@ -5,9 +5,9 @@ function Profile() {
 
    const { fullName, avatar} = user.user_metadata
    const abbreviateName = (name) => {
-    if (name.split(" ").some(word => word.length > 5)) {
-        const words = name.split(" ");
-        const abbreviatedWords = words.map(word => {
+    if (name?.split(" ").some(word => word.length > 5)) {
+        const words = name?.split(" ");
+        const abbreviatedWords = words?.map(word => {
             if (word.length > 5) {
                 const randomIndex1 = Math.floor(Math.random() * word.length);
                 let randomIndex2 = Math.floor(Math.random() * word.length);
