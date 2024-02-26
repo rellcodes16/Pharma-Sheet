@@ -1,13 +1,5 @@
 import supabase, { supabaseUrl } from "./supabase";
 
-export async function getUsers(){
-    const { data, error } = await supabase.from('auth.users').select('*');
-
-    if(error) throw new Error(error.message)
-
-    console.log(data)
-}
-
 export async function signup({ fullName, email, password }){
     const { data, error } = await supabase.auth.signUp({
         email, password, options: {
@@ -84,15 +76,3 @@ export async function updateCurrentUser({ password, fullName, avatar }){
     return updatedUser;
 }
 
-
-
-// export async function forgotPassword(email){
-//     // const { data, error: emailError } = await supabase.fro
-//     const { data, error } = await supabase.auth.resetPasswordForEmail(email)
-
-//     if(error) throw new Error(error.message)
-
-//     console.log(data)
-//     return data;
-
-// }

@@ -1,10 +1,8 @@
 import { useState } from "react";
 import Button from "../../ui/Button";
 import FormRowVertical from "../../ui/FormRowVertical";
-// import { login } from "../../services/apiAuth";
 import { useLogin } from "./useLogin";
 import SpinnerMini from "../../ui/SpinnerMini";
-import { getUsers } from "../../services/apiAuth";
 
 function LoginForm() {
   const [email, setEmail] = useState("");
@@ -24,7 +22,6 @@ function LoginForm() {
       }
     })
 
-    getUsers();
   }
 
   return (
