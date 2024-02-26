@@ -1,0 +1,40 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+    @apply transition-colors duration-200;
+}
+
+/* Tailwind CSS */
+.react-calendar__tile--active {
+    @apply bg-green-800 text-white;
+  }
+  
+  .react-calendar__tile--now {
+    @apply bg-green-300 text-green-800
+  }
+  
+  .react-calendar__tile--hover {
+    @apply bg-gray-300;
+  }
+  
+  .react-calendar__navigation {
+    @apply flex justify-between items-center p-2;
+  }
+  
+  .react-calendar__navigation__label {
+    @apply text-lg font-bold;
+  }
+  
+  .react-calendar__navigation button {
+    @apply bg-transparent border-none cursor-pointer text-lg focus:outline-none;
+  }
+  
+  .react-calendar__navigation button:hover {
+    @apply text-green-500;
+  }
+  
+  .dot{
+    @apply bg-green-700 rounded-full text-sm px-2 absolute right-[15px] top-[18px]
+  }
