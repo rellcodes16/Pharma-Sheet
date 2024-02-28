@@ -94,7 +94,6 @@ export async function deleteSales(id) {
 
     const deletedSale = data;
 
-    // Now, insert the deleted sale into the history table
     const { insertError } = await supabase.from("history").insert([deletedSale]);
 
     if (insertError) {
@@ -102,7 +101,6 @@ export async function deleteSales(id) {
         throw new Error("Failed to archive sale data");
     }
 
-    // After archiving, delete the sale from the sales table
     const { deleteError } = await supabase.from("sales").delete().eq("id", id);
 
     if (deleteError) {
@@ -119,7 +117,7 @@ export async function getMedicationDetails(medDetails) {
     try {
         const { data, error } = await supabase
             .from("inventory")
-            .select('*').eq('medication_name', medDetails);
+            .select('*').ilike('medication_name', medDetails);
 
         if (error) {
             console.error(error);
@@ -156,7 +154,7 @@ export const getInventoryDetails = async (medName) => {
     const { data, error } = await supabase
       .from('inventory')
       .select('*')
-      .eq('medication_name', medName)
+      .ilike('medication_name', medName)
 
     if (error) {
       throw new Error(`Error fetching inventory details: ${error.message}`);
@@ -221,14 +219,3 @@ export async function getSalesAfterDate(date) {
   console.log('sales data', data)
   return data;
 }
-// export async function getMedUnitAfterDate(date) {
-//   const { data, error } = await supabase.from("history").select("units").gte("created_at", date).lte("created_at", getToday({ end: true }));
-
-//   if (error) {
-//     console.error(error);
-//     throw new Error("Med Units could not get loaded");
-//   }
-
-//   console.log('med units', data)
-//   return data;
-// }

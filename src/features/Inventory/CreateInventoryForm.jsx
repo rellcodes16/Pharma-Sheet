@@ -42,16 +42,20 @@ const CreateInventoryForm = ({ onCloseModal, inventoryToUpdate = {} }) => {
 
 
   }
+  const handleReset = () => {
+    reset();
+    onCloseModal()
+  }
 
   const handleError = (errors) => {
     console.log(errors)
   }
   return (
     <form onSubmit={handleSubmit(handleSubmitInventory, handleError)} className="p-5">
-      <FormRow label='Med name' error={errors?.name?.message}>
+      <FormRow label='Med name' error={errors?.medication_name?.message}>
         <input type="text" id="name" className="border-solid border border-black ml-2 rounded-sm px-2 py-1 mb-3" disabled={isWorking} {...register ('medication_name',{required: 'This field is required'})}/>
       </FormRow>
-      <FormRow label='Units' error={errors?.name?.message}>
+      <FormRow label='Units' error={errors?.units?.message}>
         <input type="number" id="units" className="border-solid border border-black ml-2 rounded-sm px-2 py-1 mb-3" disabled={isWorking} {...register ('units', 
         {required: 'This field is required', 
           min: {
@@ -59,7 +63,7 @@ const CreateInventoryForm = ({ onCloseModal, inventoryToUpdate = {} }) => {
             message: 'Unit must be at least 1'
           }})}/>
       </FormRow>
-      <FormRow label='Unit Price' error={errors?.name?.message}>
+      <FormRow label='Unit Price' error={errors?.unitPrice?.message}>
         <input type="number" id="unitPrice" className="border-solid border border-black ml-2 rounded-sm px-2 py-1 mb-3" disabled={isWorking} {...register ('unitPrice', 
         {required: 'This field is required', 
           min: {
@@ -67,7 +71,7 @@ const CreateInventoryForm = ({ onCloseModal, inventoryToUpdate = {} }) => {
             message: 'Unit must be at least 1'
           }})}/>
       </FormRow>
-      <FormRow label='Cost Price' error={errors?.name?.message}>
+      <FormRow label='Cost Price' error={errors?.costPrice?.message}>
         <input type="number" id="costPrice" className="border-solid border border-black ml-2 rounded-sm px-2 py-1 mb-3" disabled={isWorking} {...register ('costPrice', 
         {required: 'This field is required', 
           min: {
@@ -77,9 +81,9 @@ const CreateInventoryForm = ({ onCloseModal, inventoryToUpdate = {} }) => {
       </FormRow>
       <FormRow>
         <div className="flex justify-between gap-5">
-        <Button type="reset">
+        <button type="button" className="p-2 rounded-md mb-3 text-gray-600 inline-block cursor:pointer bg-gray-400 dark:text-gray-900" onClick={handleReset} disabled={isWorking}>
           Cancel
-        </Button>
+        </button>
         <Button disabled={isWorking} type='primary'>
           {
             isUpdateSession ? 'Edit Item' : 'Add Item'

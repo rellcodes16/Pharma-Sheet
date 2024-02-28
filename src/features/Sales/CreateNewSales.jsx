@@ -7,6 +7,9 @@ import { getInventoryData, getInventoryDetails, getMedicationDetails, updateInve
 import { formatCurrency } from "../../utils/helpers";
 import { useQuery } from "@tanstack/react-query";
 import toast from "react-hot-toast";
+import { useEffect, useState } from "react";
+import Spinner from "../../ui/Spinner";
+
 
 const CreateNewSales = ({ onCloseModal, saleToUpdate = {} }) => {
   const { id: saleId, ...updateValues } = saleToUpdate;
@@ -16,24 +19,37 @@ const CreateNewSales = ({ onCloseModal, saleToUpdate = {} }) => {
     defaultValues: isUpdateSession ? updateValues : { price: "", medName: "", quantity: "", costPrice: "" },
   });
 
+  const [isLoadingPrices, setIsLoadingPrices] = useState(false)
+  const [isLoadingQuantity, setIsLoadingQuantity] = useState(false);
+
+
   const { errors } = formState;
   const { isCreating, createSale } = useCreateSales();
   const { isUpdating, updateSale } = useUpdateSales();
   // const { inventory } = useInventory();
+
 
   const { isLoading, data: inventory, error } = useQuery({
     queryKey: ['inventory'],
     queryFn: getInventoryData,
   })
 
+  if(isLoadingPrices || isLoadingQuantity || isLoading) return <Spinner />
+
+
   const isWorking = isCreating || isUpdating;
+
   const checkInventoryAvailability = async (medicationsWithQuantities) => {
     try {
       for (const medicationWithQuantity of medicationsWithQuantities) {
         const [medName, medQuantity] = medicationWithQuantity.split(':').map(item => item.trim());
-  
-        const inventoryData = await getInventoryDetails(medName);
-  
+        const inventoryRawData = await getInventoryDetails(medName);
+        const inventoryData = inventoryRawData[0]
+
+        // console.log(inventoryData)
+
+        // console.log("Inventory units:", inventoryData[0].units);
+        // console.log("Parsed medQuantity:", parseInt(medQuantity));
         if (!inventoryData) {
           toast.error(`Inventory details not found for medication: ${medName}`);
           return false;
@@ -46,18 +62,19 @@ const CreateNewSales = ({ onCloseModal, saleToUpdate = {} }) => {
   
         if (parseInt(medQuantity) === 0) {
           toast.error(`Quantity cannot be 0 for medication: ${medName}`);
-          return;
+          return false;
         }
       }
+  
+      return true;
     } catch (error) {
       console.error("Error checking inventory availability:", error);
       toast.error("Error checking inventory availability. Please try again.");
       return false;
     }
-
   };
   
-
+  
 
 const handleSubmitSale = async (data) => {
   console.log('saleData', data)
@@ -76,14 +93,13 @@ const handleSubmitSale = async (data) => {
       return acc;
     }, {});
 
-    const { medName, quantity } = dataArray
+    // const { medName, quantity } = dataArray
 
-    console.log('medName', medName)
-    console.log('quantity', quantity)
+    // console.log('medName', medName)
+    // console.log('quantity', quantity)
 
-    console.log('dataArray', dataArray)
+    // console.log('dataArray', dataArray)
 
-    // Check if data.medName is an array
     if (!Array.isArray(dataArray.medName)) {
       console.error("Medication names are not in the expected format.");
       return;
@@ -102,7 +118,6 @@ const handleSubmitSale = async (data) => {
 
     console.log(medicationsWithQuantities);
 
-    // Check inventory availability
     const isAvailable = await checkInventoryAvailability(medicationsWithQuantities);
 
     console.log('isAvailable', isAvailable)
@@ -123,7 +138,6 @@ const handleSubmitSale = async (data) => {
 
   console.log('cleanDataArray', cleanDataArray);
 
-    // Update or create sale
     if (isUpdateSession) {
       updateSale(
         { newSaleData: { ...cleanDataArray }, id: saleId },
@@ -145,6 +159,9 @@ const handleSubmitSale = async (data) => {
         }
       );
     }
+
+    const loadingToastId = toast.loading('Please wait, your request is being processed...');
+
 
     // Deduct quantities from inventory
     // for (let i = 0; i < dataArray.medName.length; i++) {
@@ -168,7 +185,7 @@ for (let i = 0; i < medNameArray.length; i++) {
 }
 
     
-
+    toast.dismiss(loadingToastId);
     reset();
     onCloseModal?.();
   } catch (error) {
@@ -230,28 +247,29 @@ const deductFromInventory = async (data) => {
 };
 
 
+const handleFetchPrice = async (medNames) => {
+  setIsLoadingPrices(true); // Set loading state to true while fetching prices
 
-  const handleFetchPrice = async (medNames) => {
+  try {
     const costPrices = [];
     const prices = [];
     const quantity = [];
     const dosage = [];
     const batchNo = [];
+
     for (const medName of medNames) {
       try {
-        const cost = await getMedicationDetails(medName)
-        const unit = await getMedicationDetails(medName);
-        const unitPrice = unit.unitPrice
-        console.log(unitPrice)
-        const costPrice = cost.costPrice
-        console.log(costPrice)
+        const [cost, unit] = await Promise.all([getMedicationDetails(medName), getMedicationDetails(medName)]);
+        const unitPrice = unit.unitPrice;
+        const costPrice = cost.costPrice;
+
         costPrices.push({ medName, costPrice: formatCurrency(costPrice) });
         prices.push({ medName, price: formatCurrency(unitPrice) });
-        quantity.push({medName})
-        dosage.push({medName})
-        batchNo.push({medName})
+        quantity.push({ medName });
+        dosage.push({ medName });
+        batchNo.push({ medName });
       } catch (error) {
-        console.error(`Error fetching price for ${medName}: ${error.message}`);
+        toast.error(`Error fetching price for ${medName}: ${error.message}. Please double check your medication name and internet connection.`);
         costPrices.push({ medName, price: 'N/A' }); 
         prices.push({ medName, price: 'N/A' }); 
       }
@@ -274,14 +292,25 @@ const deductFromInventory = async (data) => {
     setValue('quantity', formattedQuantity)
     setValue('dosage', formattedDosage)
     setValue('batchNo', formattedBatchNo)
-  };
+
+  } catch (error) {
+    console.error('Error fetching prices:', error);
+  } finally {
+    setIsLoadingPrices(false); // Set loading state to false after fetching prices
+  }
+};
+
+
+  const handleReset = () => {
+    reset();
+    onCloseModal()
+  }
   
 
   const handleError = (errors) => {
     console.log(errors);
   };
 
-  
   const handleMedNameBlur = (e) => {
     const medNames = e.target.value.split('\n').map((name) => name.trim());
     handleFetchPrice(medNames);
@@ -292,6 +321,8 @@ const deductFromInventory = async (data) => {
   const costPrice = watch('costPrice')
 
   const handleQuantityBlur = () => {
+    setIsLoadingQuantity(true); 
+  
     console.log('TEST');
     console.log('Quantity:', quantity, 'Price:', price);
   
@@ -299,24 +330,24 @@ const deductFromInventory = async (data) => {
       const splitArrayPrice = price.split('\n');
       const splitArrayCostPrice = costPrice.split('\n');
       const splitArrayQuantity = quantity.split('\n');
-
+  
       let totalPrice = 0;
       let totalCostPrice = 0;
-
+  
       for (let i = 0; i < splitArrayPrice.length && splitArrayCostPrice; i++) {
         const splitPrice = splitArrayPrice[i].split(': $');
         const splitCostPrice = splitArrayCostPrice[i].split(': $')
         const splitQuantity = splitArrayQuantity[i].split(':');
-
+  
         const priceString = splitPrice[1].replace(/,/g, '');
         const costPriceString = splitCostPrice[1].replace(/,/g, '');
-
+  
         const priceValue = parseFloat(priceString);
         const costPriceValue = parseFloat(costPriceString);
         const quantityValue = parseFloat(splitQuantity[1]);
-
+  
         console.log('priceValue', priceValue)
-
+  
         if (!isNaN(priceValue) && !isNaN(quantityValue) && !isNaN(costPriceValue)) {
           totalPrice += priceValue * quantityValue;
           totalCostPrice += costPriceValue * quantityValue;
@@ -324,9 +355,13 @@ const deductFromInventory = async (data) => {
       }
   
       setValue('totalPrice', totalPrice);
-      setValue('totalCost', totalCostPrice)
+      setValue('totalCost', totalCostPrice);
     }
+  
+    setIsLoadingQuantity(false);
   };
+  
+  console.log('errors', errors)
 
   return (
     <form onSubmit={handleSubmit(handleSubmitSale, handleError)} className="p-2 min-w-[300px]">
@@ -345,56 +380,60 @@ const deductFromInventory = async (data) => {
           )}
         />
       </FormRow>
-      <FormRow label="Client name" error={errors?.name?.message}>
+      <FormRow label="Client name" error={errors?.clientName?.message}>
         <input type="text" id="clientName" className="border-solid border border-black ml-2 rounded-sm px-2 py-1 mb-3" disabled={isWorking} {...register("clientName", { required: "This field is required" })} />
       </FormRow>
       <div className="flex gap-3">
-        <FormRow label="Batch No." error={errors?.name?.message}>
+        <FormRow label="Batch No." error={errors?.batchNo?.message}>
           <textarea type="text" id="batchNo" className="border-solid border border-black ml-2 rounded-sm px-2 py-1 mb-3 w-[100%]" disabled={isWorking} {...register("batchNo", { required: "This field is required" })} />
         </FormRow>
-        <FormRow label="Quantity" error={errors?.name?.message}>
-            <Controller 
-              name="quantity"
-              control={control}
-              render={({ field }) => (
-                <textarea
-                  {...field} 
-                  type="text" 
-                  id="quantity" 
-                  className="border-solid border border-black ml-2 rounded-sm px-2 py-1 mb-3 w-[100%]" 
-                  disabled={isWorking} {...register("quantity", { required: "This field is required" })} 
-                  onBlur={handleQuantityBlur}
-                />
-              )}
+        <FormRow label="Quantity" error={errors?.quantity?.message}>
+          <Controller 
+            name="quantity"
+            control={control}
+            render={({ field }) => (
+            <textarea
+              {...field} 
+              id="quantity" 
+              className="border-solid border border-black ml-2 rounded-sm px-2 py-1 mb-3 w-full"
+              disabled={isWorking}
+
+              {...register("quantity", { required: "This field is required" })} 
+              onBlur={handleQuantityBlur}
             />
+          )}
+          />
         </FormRow>
+
       </div>
       <div className="flex gap-3">
-        <FormRow label="Cost Price" error={errors?.name?.message}>
-          <textarea id="costPrice" className="border-solid border border-black ml-2 rounded-sm px-2 py-1 mb-3 w-[100%]" disabled={true} {...register("costPrice", { required: "This field is required" })} />
+        <FormRow label="Cost Price" error={errors?.costPrice?.message}>
+          <textarea id="costPrice" className="border-solid border border-black ml-2 rounded-sm px-2 py-1 mb-3 w-[100%]" disabled {...register("costPrice", { required: "This field is required" })} />
         </FormRow>
-        <FormRow label="Price" error={errors?.name?.message}>
-          <textarea id="price" className="border-solid border border-black ml-2 rounded-sm px-2 py-1 mb-3 w-[100%]" disabled={true} {...register("price", { required: "This field is required" })} />
+        <FormRow label="Price" error={errors?.price?.message}>
+          <textarea id="price" className="border-solid border border-black ml-2 rounded-sm px-2 py-1 mb-3 w-[100%]" disabled {...register("price", { required: "This field is required" })} />
         </FormRow>
-        <FormRow label="Time" error={errors?.name?.message}>
+        <FormRow label="Time" error={errors?.time?.message}>
           <input type="datetime-local" id="time" className="border-solid border border-black ml-2 rounded-sm px-2 py-1 mb-3 w-[100%]" disabled={isWorking} {...register("dateAndTime", { required: "This field is required" })} />
         </FormRow>
       </div>
       <div className="flex gap-3">
-        <FormRow label="Dosage" error={errors?.name?.message}>
+        <FormRow label="Dosage" error={errors?.dosage?.message}>
           <textarea type="text" id="dosage" className="border-solid border border-black ml-2 rounded-sm px-2 py-1 mb-3 w-[100%]" disabled={isWorking} {...register("dosage", { required: "This field is required" })} />
         </FormRow>
-        <FormRow label="Cost Total" error={errors?.name?.message}>
-          <input type="number" id="totalCostPrice" className="border-solid border border-black ml-2 rounded-sm px-2 py-1 mb-3 w-[100%]" disabled={isWorking} {...register("totalCost", { required: "This field is required", min: { value: 1, message: "Total Cost must be at least 1" } })} />
+        <FormRow label="Cost Total" error={errors?.totalCost?.message}>
+          <input type="number" id="totalCostPrice" className="border-solid border border-black ml-2 rounded-sm px-2 py-1 mb-3 w-[100%]" disabled {...register("totalCost", { required: "This field is required", min: { value: 1, message: "Total Cost must be at least 1" } })} />
         </FormRow>
-        <FormRow label="Total Price" error={errors?.name?.message}>
-          <input type="number" id="totalPrice" className="border-solid border border-black ml-2 rounded-sm px-2 py-1 mb-3 w-[100%]" disabled={isWorking} {...register("totalPrice", { required: "This field is required", min: { value: 1, message: "Total Price must be at least 1" } })} />
+        <FormRow label="Total Price" error={errors?.totalPrice?.message}>
+          <input type="number" id="totalPrice" className="border-solid border border-black ml-2 rounded-sm px-2 py-1 mb-3 w-[100%]" disabled {...register("totalPrice", { required: "This field is required", min: { value: 1, message: "Total Price must be at least 1" } })} />
         </FormRow>
       </div>
       <div className="self-end">
         <FormRow>
           <div className="flex justify-between">
-            <Button type="reset">Cancel</Button>
+          <button type="button" className="p-2 rounded-md mb-3 text-gray-600 inline-block cursor:pointer bg-gray-400 dark:text-gray-900" onClick={handleReset} disabled={isWorking}>
+          Cancel
+        </button>
             <Button disabled={isWorking} type="primary">
               {isUpdateSession ? "Edit Sale" : "Add Sale"}
             </Button>

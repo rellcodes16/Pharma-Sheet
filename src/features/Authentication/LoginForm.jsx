@@ -3,12 +3,15 @@ import Button from "../../ui/Button";
 import FormRowVertical from "../../ui/FormRowVertical";
 import { useLogin } from "./useLogin";
 import SpinnerMini from "../../ui/SpinnerMini";
+import Spinner from "../../ui/Spinner";
 
 function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const { login, isLoading } = useLogin()
+
+  if(isLoading) return <Spinner />
 
   function handleSubmit(e) {
     e.preventDefault()

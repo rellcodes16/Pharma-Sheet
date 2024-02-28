@@ -43,15 +43,20 @@ const ExpenseForm = ({ onCloseModal, expenseToUpdate = {} }) => {
 
   }
 
+  const handleReset = () => {
+    reset();
+    onCloseModal()
+  }
+
   const handleError = (errors) => {
     console.log(errors)
   }
   return (
     <form onSubmit={handleSubmit(handleSubmitExpense, handleError)} className="p-5">
-      <FormRow label='Expense name' error={errors?.name?.message}>
+      <FormRow label='Expense name' error={errors?.expense_name?.message}>
         <input type="text" id="name" className="border-solid border border-black ml-2 rounded-sm px-2 py-1 mb-3" disabled={isWorking} {...register ('expense_name',{required: 'This field is required'})}/>
       </FormRow>
-      <FormRow label='Expense price' error={errors?.name?.message}>
+      <FormRow label='Expense price' error={errors?.expense_price?.message}>
         <input type="number" id="price" className="border-solid border border-black ml-2 rounded-sm px-2 py-1 mb-3" disabled={isWorking} {...register ('expense_price', 
         {required: 'This field is required', 
           min: {
@@ -61,9 +66,10 @@ const ExpenseForm = ({ onCloseModal, expenseToUpdate = {} }) => {
       </FormRow>
       <FormRow>
         <div className="flex justify-between gap-5">
-        <Button type="reset">
+        <button type="button" className="p-2 rounded-md mb-3 text-gray-600 inline-block cursor:pointer bg-gray-400 dark:text-gray-900" onClick={handleReset} disabled={isWorking}>
           Cancel
-        </Button>
+        </button>
+
         <Button disabled={isWorking} type='primary'>
           {
             isUpdateSession ? 'Edit Expense' : 'Add Expense'
