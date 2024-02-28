@@ -36,7 +36,6 @@ function SalesInvoice({ salesId }) {
     <div className='text-gray-800 dark:text-gray-400 text-xl' id='invoice'>
       <div className='mb-5'>
         <Logo />
-        <h1 className='font-bold text-3xl text-center'>Pharma Sheet</h1>
       </div>
 
       <div className='flex flex-col gap-2 mb-2'> 
