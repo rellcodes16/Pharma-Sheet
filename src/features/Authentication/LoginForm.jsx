@@ -17,7 +17,7 @@ function LoginForm() {
   function handleSubmit(e) {
     e.preventDefault()
 
-    if(!email || !password) return;
+    if(!email || !password) return toast.error('Please enter your login details');
 
     login({ email, password }, {
       onSettled: () => {
