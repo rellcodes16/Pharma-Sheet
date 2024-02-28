@@ -4,6 +4,7 @@ import FormRowVertical from "../../ui/FormRowVertical";
 import { useLogin } from "./useLogin";
 import SpinnerMini from "../../ui/SpinnerMini";
 import Spinner from "../../ui/Spinner";
+import toast from "react-hot-toast";
 
 function LoginForm() {
   const [email, setEmail] = useState("");
@@ -22,6 +23,9 @@ function LoginForm() {
       onSettled: () => {
         setEmail('')
         setPassword('')
+      },
+      onError: () => {
+        toast.error('Invalid Login Details. Please Try Again')
       }
     })
 
