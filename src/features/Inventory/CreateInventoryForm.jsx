@@ -3,6 +3,7 @@ import FormRow from "../../ui/FormRow"
 import Button from "../../ui/Button"
 import { useCreateInventory } from "./useCreateInventory"
 import { useUpdateInventory } from "./useUpdateInventory"
+import Spinner from "../../ui/Spinner"
 
 const CreateInventoryForm = ({ onCloseModal, inventoryToUpdate = {} }) => {
   const {id: inventoryId, ...updateValues} = inventoryToUpdate;
@@ -19,9 +20,11 @@ const CreateInventoryForm = ({ onCloseModal, inventoryToUpdate = {} }) => {
 
   const isWorking = isCreating || isUpdating
 
+  if(isWorking) return <Spinner />
+
   const handleSubmitInventory = (data) => {
     if(isUpdateSession)
-      updateInventory({ newInventoryData: {...data}, id:inventoryId}, 
+      updateInventory({ newInventoryData: {...data}, id:inventoryId},
       {
         onSuccess: () => {
           reset();

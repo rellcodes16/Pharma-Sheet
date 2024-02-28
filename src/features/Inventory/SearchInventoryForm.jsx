@@ -4,6 +4,7 @@ import Button from "../../ui/Button"
 import { useSearchInventory } from "./useSearchInventory"
 import { searchInventory } from "../../services/apiInventory"
 import { useSearch } from "../../services/SearchContext"
+import toast from "react-hot-toast"
 
 function SearchInventoryForm({ onCloseModal }) {
     const { register, handleSubmit, reset, formState } = useForm()
@@ -19,9 +20,15 @@ function SearchInventoryForm({ onCloseModal }) {
             const { medication_name } = formData;
             const result = await searchInventory(medication_name);
             console.log('result', result)
-            setSearchResult(result);
-            reset();
-            onCloseModal?.();
+            if (!result || result === undefined) {
+                toast.error('Result could not be found');
+                reset();
+                onCloseModal?.();
+            } else {
+                setSearchResult(result);
+                reset();
+                onCloseModal?.();
+            }
         } catch (error) {
             console.error(error.message); // Log the error
         }

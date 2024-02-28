@@ -7,6 +7,7 @@ import { convertTimestamp, formatCurrency } from "../../utils/helpers"
 import CreateNewSales from "./CreateNewSales"
 import { useDeleteSale } from "./useDeleteSales"
 import SalesInvoice from "./SalesInvoice"
+import Spinner from "../../ui/Spinner"
 
 
 const SalesRow = ({ salesItem }) => {
@@ -14,6 +15,8 @@ const SalesRow = ({ salesItem }) => {
     const { id: salesId, medName, clientName, batchNo, price, quantity, dateAndTime, dosage, totalPrice, costPrice, totalCost } = salesItem
 
     const { isDeleting, deleteSale } = useDeleteSale()
+
+    if(isDeleting) return <Spinner />
 
     
   return (

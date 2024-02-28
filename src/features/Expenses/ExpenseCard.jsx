@@ -6,6 +6,7 @@ import { Menu, List, Toggle, Button } from "../../ui/Menu"
 import { formatCurrency } from "../../utils/helpers"
 import { useDeleteExpense } from "./useDeleteExpense"
 import ExpenseForm from "./ExpenseForm"
+import Spinner from "../../ui/Spinner"
 
 
 
@@ -13,6 +14,8 @@ const ExpenseCard = ({ expenseItem }) => {
     const { isDeleting, deleteExpense } = useDeleteExpense()
 
     const { id: expenseId, expense_name, expense_price  } = expenseItem
+
+    if(isDeleting) return <Spinner />
     
   return (
     <Table.Row role='row' className="grid sm:gap-2 gap-5 p-3 items-center overflow-x-auto min-w-[500px] bg-gray-50 dark:bg-slate-800 dark:text-gray-300 border border-solid text-center dark:border-gray-600 border-gray-100 font-bold text-gray-600 sm:py-[1.1rem] sm:px-[2rem]" style={{ gridTemplateColumns: '0.3fr 1.8fr 1fr 0.5fr'}}>

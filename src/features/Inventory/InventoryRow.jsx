@@ -9,10 +9,15 @@ import { formatCurrency } from "../../utils/helpers"
 import RefillInventory from "./RefillInventory"
 
 
-const InventoryRow = ({ inventoryItem }) => {
+const InventoryRow = ({ inventoryItem, onCloseModal }) => {
     const { id: inventoryId, medication_name, units, unitPrice, costPrice, status} = inventoryItem
 
     const { isDeleting, deleteInventoryItem } = useDeleteInventory()
+
+    const handleDelete = () => {
+      deleteInventoryItem(inventoryId)
+      onCloseModal()
+    }
     
   return (
     <Table.Row role='row' className="grid sm:gap-2 gap-5 p-3 items-center min-w-[1000px] bg-gray-50 dark:bg-slate-800 dark:text-gray-300 border border-solid text-center dark:border-gray-600 border-gray-100 font-bold text-gray-600 sm:py-[1.1rem] sm:px-[2rem]" style={{ gridTemplateColumns: '1.8fr 1fr 1fr 1fr 1fr 0.5fr'}}>
@@ -42,7 +47,7 @@ const InventoryRow = ({ inventoryItem }) => {
               <CreateInventoryForm inventoryToUpdate={inventoryItem}/>
             </Modal.Window>
             <Modal.Window name='delete'>
-              <ConfirmDeletion itemName='inventory' disabled={isDeleting} onConfirm={() => deleteInventoryItem(inventoryId)}/>
+              <ConfirmDeletion itemName='inventory' disabled={isDeleting} onConfirm={handleDelete}/>
             </Modal.Window>
             <Modal.Window name='refill'>
               <RefillInventory inventoryId={inventoryId}/>
