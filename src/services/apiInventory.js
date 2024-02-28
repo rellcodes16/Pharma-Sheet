@@ -22,6 +22,18 @@ export async function getInventory({ page }){
     return { data, count };
 }
 
+export async function getInventoryWithoutPagination(){
+  const { data, error } = await supabase.from('inventory').select('*')
+
+  if(error){
+    console.error(error)
+    throw new Error('Inventory Data could not be loaded')
+  }
+
+  console.log(data)
+  return data;
+}
+
 export async function createInventory(newInventory){
     const { data, error } = await supabase.from('inventory').insert([newInventory])
     .select()

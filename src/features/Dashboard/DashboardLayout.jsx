@@ -5,9 +5,10 @@ import Spinner from '../../ui/Spinner'
 import { useRecentSales } from './useRecentSales'
 import { useExpense } from '../Expenses/useExpense'
 import ExpensePieChart from './ExpensePieChart'
+import { useGetInventory } from '../Inventory/useGetInventory'
 
 function DashboardLayout() {
-    const { inventory } = useInventory()
+    const { inventory } = useGetInventory()
     const { expense } = useExpense()
     const { isLoading, sales, numDays } = useRecentSales()
 
