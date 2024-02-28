@@ -1,9 +1,12 @@
+import { useState } from 'react'
 import { useForm } from "react-hook-form"
 import FormRow from "../../ui/FormRow"
 import Button from "../../ui/Button"
 import { useCreateInventory } from "./useCreateInventory"
 import { useUpdateInventory } from "./useUpdateInventory"
 import Spinner from "../../ui/Spinner"
+import { checkForDuplicateMedication } from '../../services/apiInventory'
+import toast from 'react-hot-toast'
 
 const CreateInventoryForm = ({ onCloseModal, inventoryToUpdate = {} }) => {
   const {id: inventoryId, ...updateValues} = inventoryToUpdate;
@@ -17,34 +20,48 @@ const CreateInventoryForm = ({ onCloseModal, inventoryToUpdate = {} }) => {
 
   const { isCreating, createInventory } = useCreateInventory()
   const { isUpdating, updateInventory } = useUpdateInventory()
+  const [isCheckingDuplicate, setIsCheckingDuplicate] = useState(false);
 
   const isWorking = isCreating || isUpdating
 
   if(isWorking) return <Spinner />
 
-  const handleSubmitInventory = (data) => {
-    if(isUpdateSession)
-      updateInventory({ newInventoryData: {...data}, id:inventoryId},
-      {
-        onSuccess: () => {
-          reset();
-          onCloseModal?.()
-        }
+  const handleSubmitInventory = async (data) => {
+    try {
+      setIsCheckingDuplicate(true);
+      const isDuplicate = await checkForDuplicateMedication(data.medication_name);
+      if (isDuplicate) {
+        toast.error('Medication name already exists.');
+        return;
       }
-    )
-
-    else
-      createInventory({...data},
-      {
-        onSuccess: () => {
-          reset();
-          onCloseModal?.()
-        }
+      
+      if (isUpdateSession) {
+        updateInventory(
+          { newInventoryData: { ...data }, id: inventoryId },
+          {
+            onSuccess: () => {
+              reset();
+              onCloseModal?.();
+            },
+          }
+        );
+      } else {
+        createInventory(
+          { ...data },
+          {
+            onSuccess: () => {
+              reset();
+              onCloseModal?.();
+            },
+          }
+        );
       }
-    )
-
-
-  }
+    } catch (error) {
+      console.error('Error handling inventory:', error.message);
+    } finally {
+      setIsCheckingDuplicate(false);
+    }
+  };
   const handleReset = () => {
     reset();
     onCloseModal()

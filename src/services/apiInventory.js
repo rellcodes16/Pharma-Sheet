@@ -34,6 +34,24 @@ export async function createInventory(newInventory){
     return data;
 }
 
+export async function checkForDuplicateMedication(medication_name){
+  const { data, error } = await supabase.from('inventory').select('id').eq('medication_name', medication_name).single();
+
+  // if (error) {
+  //   console.error(error);
+  //   throw new Error("Error checking for duplicate medication");
+  // }
+
+  // No matching record found, so add the medication
+  if (data === null) {
+    return false; // No duplicate found
+  }
+
+  return true; // Duplicate found
+}
+
+
+
 export async function updateInventory(newInventory, id) {
     const { data, error } = await supabase.from("inventory").update({...newInventory}).eq("id", id).select().single();
   
