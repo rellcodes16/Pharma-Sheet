@@ -17,7 +17,7 @@ function ExpensePieChart({ isDarkMode }) {
     return (
         <div>
             <ResponsiveContainer width='100%' height={300}>
-            <h1 className="text-2xl text-gray-400 italic">Expense</h1>
+            <h1 className="text-2xl dark:text-gray-400 text-gray-800 uppercase font-bold">Expense</h1>
                 <PieChart>
                     <Pie
                         data={expenseData}
