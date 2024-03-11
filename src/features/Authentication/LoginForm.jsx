@@ -5,6 +5,7 @@ import { useLogin } from "./useLogin";
 import SpinnerMini from "../../ui/SpinnerMini";
 import Spinner from "../../ui/Spinner";
 import toast from "react-hot-toast";
+import DemoAccount from "./DemoAccount";
 
 function LoginForm() {
   const [email, setEmail] = useState("");
@@ -59,6 +60,7 @@ function LoginForm() {
         <Button type="primary" disabled={isLoading}>
           {!isLoading ? 'Log in' : <SpinnerMini />}
         </Button>
+        <DemoAccount setEmail={setEmail} setPassword={setPassword}/>
       </FormRowVertical>
     </form>
   );

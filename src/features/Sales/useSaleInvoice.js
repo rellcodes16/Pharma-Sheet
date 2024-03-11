@@ -14,19 +14,3 @@ export function useSaleInvoice() {
     return { invoice, isLoadingInvoice }
    
 }
-
-
-// import { useQuery } from "@tanstack/react-query";
-// import { getSaleInvoice } from "../../services/apiSales";
-// import { useParams } from "react-router-dom";
-
-// export function useSaleInvoice() {
-//     const { salesId } = useParams()
-
-//     const { isLoading: isLoadingInvoice, data: invoice } = useQuery({
-//         queryKey: ['sales', salesId],
-//         queryFn: () => getSaleInvoice(salesId),
-//       })
-
-//     return { invoice, isLoadingInvoice }
-// }

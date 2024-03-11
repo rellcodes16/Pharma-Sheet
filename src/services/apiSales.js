@@ -73,17 +73,6 @@ export async function updateSales(newSale, id) {
     return { updateSaleData, updateHistoryData };
 }
 
-// export async function deleteSales(id) {
-//     const { data, error } = await supabase.from("sales").delete().eq("id", id);
-  
-//     if (error) {
-//       console.error(error);
-//       throw new Error("Sale Item could not be deleted");
-//     }
-//     console.log(id)
-//     return data;
-// }
-
 export async function deleteSales(id) {
     const { data, error } = await supabase.from("sales").select('*').eq("id", id).single();
 

@@ -7,7 +7,7 @@ import { getInventoryData, getInventoryDetails, getMedicationDetails, updateInve
 import { formatCurrency } from "../../utils/helpers";
 import { useQuery } from "@tanstack/react-query";
 import toast from "react-hot-toast";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Spinner from "../../ui/Spinner";
 
 

@@ -6,6 +6,7 @@ import { useRecentSales } from './useRecentSales'
 import { useExpense } from '../Expenses/useExpense'
 import ExpensePieChart from './ExpensePieChart'
 import { useGetInventory } from '../Inventory/useGetInventory'
+import { formatCurrency } from '../../utils/helpers'
 
 function DashboardLayout() {
     const { inventory } = useGetInventory()
@@ -59,15 +60,15 @@ function DashboardLayout() {
         </div>
         <div className='sm:flex gap-5 mt-5'>
             <div className='w-full rounded-lg sm:flex sm:mb-0 mb-3 gap-3'>
-                <div className="dark:bg-slate-800 sm:mb-0 mb-3 w-full rounded-xl bg-white flex flex-col items-center">
+                <div className="dark:bg-slate-800 sm:mb-0 mb-3 w-full rounded-xl px-3 bg-white flex flex-col items-center">
                     <HiCurrencyDollar className='text-9xl text-yellow-700 pt-3'/>
-                    <h1 className='uppercase dark:text-gray-400 text-gray-800 font-bold text-2xl'>GROSS PROFIT</h1>
-                    <h1 className='dark:text-gray-400 text-gray-800 font-bold text-2xl'>${totalGross}</h1>
+                    <h1 className='uppercase text-center dark:text-gray-400 text-gray-800 font-bold text-2xl'>GROSS PROFIT</h1>
+                    <h1 className='dark:text-gray-400 text-gray-800 font-bold text-2xl'>{formatCurrency(totalGross)}</h1>
                 </div>
-                <div className="dark:bg-slate-800 w-full rounded-xl flex flex-col bg-white items-center">
+                <div className="dark:bg-slate-800 w-full rounded-xl flex px-3 flex-col bg-white items-center">
                     <HiMiniBanknotes className='text-9xl text-green-600 pt-3'/>
-                    <h1 className='uppercase dark:text-gray-400 text-gray-800 font-bold text-2xl'>net PROFIT</h1>
-                    <h1 className='dark:text-gray-400 text-gray-800 font-bold text-2xl'>${totalNet}</h1>
+                    <h1 className='uppercase text-center dark:text-gray-400 text-gray-800 font-bold text-2xl'>net PROFIT</h1>
+                    <h1 className='dark:text-gray-400 text-gray-800 font-bold text-2xl'>{formatCurrency(totalNet)}</h1>
                 </div>
             </div>
             <div className=' dark:bg-slate-800 w-full bg-white rounded-lg p-5'>

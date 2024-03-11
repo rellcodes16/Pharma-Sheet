@@ -5,6 +5,7 @@ const Button = ({ children, disabled, type, onClick, value }) => {
     const styles = {
         reset: base + '  bg-gray-400 dark:text-gray-900',
         primary: base + ' bg-green-700 hover:bg-green-800 text-white',
+        demo: base + ' text-green-700 bg-white',
         disabled: base + ' bg-gray-500 text-white',
         danger: base + ' bg-red-500 text-white',
         notify: base + ' bg-none text-red-800'

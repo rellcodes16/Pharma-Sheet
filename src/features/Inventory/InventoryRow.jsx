@@ -25,7 +25,7 @@ const InventoryRow = ({ inventoryItem, onCloseModal }) => {
         <p className="min-w-[50px]">{units}</p>
         <p className="min-w-[80px]">{formatCurrency(unitPrice)}</p>
         <p className="min-w-[80px]">{formatCurrency(costPrice)}</p>
-        <p className={`rounded-full text-gray-200 w-40 className="min-w-[160px]" ${status === 'Filled' && 'bg-green-600'} ${status === 'Limited' &&'bg-gray-500'} ${status === 'Empty' && 'bg-red-500'}`}>{status}</p>
+        <p className={`rounded-full text-gray-200 w-40 min-w-[160px] ${status === 'Filled' && 'bg-green-600'} ${status === 'Limited' &&'bg-gray-500'} ${status === 'Empty' && 'bg-red-500'}`}>{status}</p>
         
         <Modal>
           <div className="flex items-center justify-end">

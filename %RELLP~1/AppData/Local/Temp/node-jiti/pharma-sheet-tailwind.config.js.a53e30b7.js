@@ -1,6 +1,6 @@
 "use strict";Object.defineProperty(exports, "__esModule", {value: true});/** @type {import('tailwindcss').Config} */
 exports. default = {
-  darkMode: 'class', // Enable dark mode class variant
+  darkMode: 'class', 
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
@@ -13,4 +13,4 @@ exports. default = {
   },
   plugins: [],
 }
- /* v7-665e6b2f1f9c3f79 */
+ /* v7-01b51fd14aec714e */

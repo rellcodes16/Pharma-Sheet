@@ -20,6 +20,20 @@
         grid-template-rows: auto 1fr;
     }
 }
+@media (min-width: 768px) and (max-width: 1000px) {
+    .grid-layout{
+        grid-template-columns: 14rem 1fr;
+        grid-template-rows: auto 1fr;
+    }
+}
+/* @media (min-width: 768px) and (max-width: 1000px) {
+    .grid-layout{
+        grid-template-columns: 16rem 1fr;
+        grid-template-rows: auto 1fr;
+    }
+} */
+
+
 /* .custom-calendar .react-calendar__tile {
     padding: 0.5rem;
 }
@@ -69,4 +83,16 @@
     color: rgb(184, 177, 177);
 }
 
+::-webkit-scrollbar {
+    width: 1rem;
+}
 
+::-webkit-scrollbar-track{
+    background-color: gray;
+    border-radius: 100vw;
+    margin-block: .5em;
+}
+::-webkit-scrollbar-thumb{
+    background-color: rgb(41, 40, 40);
+    border-radius: 100vw;
+}
