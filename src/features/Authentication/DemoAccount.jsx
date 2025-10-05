@@ -1,32 +1,33 @@
 import toast from "react-hot-toast";
-import supabase from "../../services/supabase"
 import Button from "../../ui/Button";
-import { useLogin } from "./useLogin";
 
-function DemoAccount({ setEmail, setPassword }) {
-    const handleDemoLogin = async () => {
-        try{
-            const { user, session, error } = await supabase.auth.signInWithPassword({
-                email: 'boyaf25710@gexige.com',
-                password: 'abcde1234'
-            });
+function DemoAccount({ login, isLoading, setEmail, setPassword }) {
+  const demoCredentials = {
+    email: "boyaf25710@gexige.com",
+    password: "abcde1234",
+  };
 
-            if(error){
-                throw new Error('Something went wrong while trying to sign in with demo account')
-            }
+  const handleDemoLogin = () => {
+    // fill the input fields
+    setEmail(demoCredentials.email);
+    setPassword(demoCredentials.password);
 
-            setEmail('boyaf25710@gexige.com');
-            setPassword('abcde1234');
-            toast.success('Login Credentials Filled. You can now log in to test the app.')
-        }
-        catch(error){
-            console.error('Error Logging in:', error.message)
-            toast.error('Error Filling Credentials')
-        }
-    }
+    // now trigger login
+    login(demoCredentials, {
+      onSuccess: () => {
+        toast.success("Logged in with demo account!");
+      },
+      onError: () => {
+        toast.error("Demo login failed. Please try again.");
+      },
+    });
+  };
+
   return (
-    <Button type='demo' onClick={handleDemoLogin}>Demo Account Details</Button>
-  )
+    <Button type="button" onClick={handleDemoLogin} disabled={isLoading}>
+      {isLoading ? "Logging in..." : "Use Demo Account"}
+    </Button>
+  );
 }
 
-export default DemoAccount
+export default DemoAccount;

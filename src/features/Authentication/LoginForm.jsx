@@ -11,25 +11,29 @@ function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const { login, isLoading } = useLogin()
+  const { login, isLoading } = useLogin();
 
-  if(isLoading) return <Spinner />
+  if (isLoading) return <Spinner />;
 
-  function handleSubmit(e) {
-    e.preventDefault()
+  function handleSubmit(e, skipValidation = false) {
+    e.preventDefault();
 
-    if(!email || !password) return toast.error('Please enter your login details');
+    if (!skipValidation && (!email || !password))
+      return toast.error("Please enter your login details");
 
-    login({ email, password }, {
-      onSettled: () => {
-        setEmail('')
-        setPassword('')
-      },
-      onError: () => {
-        toast.error('Invalid Login Details. Please Try Again')
+    login(
+      { email, password },
+      {
+        onSuccess: () => {
+          toast.success("Welcome Back!!");
+          setEmail("");
+          setPassword("");
+        },
+        onError: () => {
+          toast.error("Invalid Login Details. Please Try Again");
+        },
       }
-    })
-
+    );
   }
 
   return (
@@ -56,11 +60,13 @@ function LoginForm() {
           disabled={isLoading}
         />
       </FormRowVertical>
+
+      {/* Buttons inside form */}
       <FormRowVertical>
-        <Button type="primary" disabled={isLoading}>
-          {!isLoading ? 'Log in' : <SpinnerMini />}
+        <Button type="submit" disabled={isLoading}>
+          {!isLoading ? "Log in" : <SpinnerMini />}
         </Button>
-        <DemoAccount setEmail={setEmail} setPassword={setPassword}/>
+        <DemoAccount login={login} isLoading={isLoading} setEmail={setEmail} setPassword={setPassword} />
       </FormRowVertical>
     </form>
   );
